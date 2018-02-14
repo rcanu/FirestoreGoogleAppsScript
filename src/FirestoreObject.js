@@ -76,6 +76,8 @@ function unwrapValue_(value) {
             return getFieldsFromFirestoreDocument(value[type]);
         case "arrayValue":
             return unwrapArray_(value[type]["values"]);
+        case "timestampValue":
+            return unwrapDate_(value[type]);
         default:
             // error
             return null;
@@ -94,6 +96,10 @@ function wrapObject_(object) {
 
     if (Array.isArray(object)) {
         return wrapArray_(object);
+    }
+
+    if(object instanceof Date) {
+        return wrapDate_(object);
     }
 
     return {"mapValue": createFirestoreDocument(object)};
@@ -131,6 +137,14 @@ function wrapArray_(array) {
     return {"arrayValue": {"values": wrappedArray}};
 }
 
+function wrapDate_(date){
+
+  // TODO support for other timezones
+  const wrappedDate = Utilities.formatDate(date, 'GMT', "yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+  return {"timestampValue": wrappedDate}
+}
+
 function unwrapArray_(wrappedArray) {
     const array = [];
 
@@ -145,4 +159,20 @@ function unwrapArray_(wrappedArray) {
     }
 
     return array;
+}
+
+function unwrapDate_(wrappedDate) {
+
+    if(wrappedDate == null || !wrappedDate){
+      return null
+    }
+
+    const date = new Date(wrappedDate);
+
+    if(date instanceof Date){
+      return date
+    } else {
+      return null
+    }
+
 }
