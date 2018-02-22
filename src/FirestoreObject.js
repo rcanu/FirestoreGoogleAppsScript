@@ -56,6 +56,8 @@ function wrapValue_(value) {
             return wrapNumber_(value);
         case "boolean":
             return wrapBoolean_(value);
+        case "undefined":
+            return wrapNull_();
         default:
             // error
             return null;
@@ -143,6 +145,12 @@ function wrapDate_(date){
   const wrappedDate = Utilities.formatDate(date, 'GMT', "yyyy-MM-dd'T'HH:mm:ss'Z'")
 
   return {"timestampValue": wrappedDate}
+}
+
+function wrapNull_(){
+
+  return {"nullValue": null}
+
 }
 
 function unwrapArray_(wrappedArray) {
